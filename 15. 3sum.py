@@ -1,23 +1,75 @@
-S = [-15,10,0,-2,14,-1,-10,-14,10,12,6,-6,10,2,-11,-9,2,13,2,-9,-14,-12,-10,-12,13,13,-10,-3,2,-11,3,-6,6,10,7,5,-13,4,-2,12,1,-11,14,-4,6,-12,-6,-14,8,11,-8,1,7,-3,5,5,-13,10,9,-3,6,-10,6,-3,7,-9,-13,9,10,0,-1,-11,4,-10,-8,-13,-15,2,-12,8,-2,-12,-14,-10,-8,6,2,-5,-7,-11,7,14,-6,-10,-12,8,-4,-10,-5,14,-3,9,-12,8,14,-13]
+# Based on the beautiful solution at https://leetcode.com/problems/3sum/discuss/7402/Share-my-AC-C++-solution-around-50ms-O(N*N)-with-explanation-and-comments
+# TODO:
+# 	1) Do Two Sum with the same approach
+# Done - Worse performance because we need indices, not values
 
-Solution = []
-Unique = []
+# Concept:
+# -6,-5,-4,-1,2,3,5,7,8,11
 
-for i in range(0, len(S)):
-    for j in range(0, len(S)):
-        if (i != j):
-            Solution.append([i, j])
+# -5, 11
+# THe key is that pairs are inside the left and right
 
-for pair in Solution:
-    for k in range(0, len(S)):
-        if (not k in pair) and ((S[pair[0]] + S[pair[1]]) == -S[k]):
-            pair.append(k)
-            break
 
-Solution = [sorted([S[index[0]], S[index[1]], S[index[2]]]) for index in Solution if len(index) == 3]
+from datetime import datetime
+startTime = datetime.now()
 
-for values in Solution:
-    if values not in Unique:
-        Unique.append(values)
+class Solution:      
+    def threeSum(self, S):
+        S = sorted(S)
+        output = set()
+        location = {}
+        for i in range(0, len(S)):
+        	for j in range(0, len(S)):
+        		if i > j:
+	        		if - S[i] - S[j] in location:
+	        			k = location[- S[i] - S[j]]
+	        			if (k != i) and (k != j):
+        					output.add(tuple(sorted([S[i], S[j], S[k]])))
+	        		else:
+	        			location[S[j]] = j
+	        			
+        return [list(triple) for triple in output]
 
-print(Unique)
+	def threeSumEfficient(self, S):
+			"""
+			:type nums: List[int]
+			:rtype: List[List[int]]
+			"""
+
+			S = sorted(S)
+			output = []
+
+			for i in range (0, len(S)):
+
+				if ((i > 0) and (S[i] == S[i-1])):
+					continue
+
+				if (S[i] > 0):
+					break
+
+				target = -S[i]
+				left = i + 1
+				right = len(S) - 1
+
+				while (left < right):
+					total = S[left] + S[right]
+
+					if (total < target):
+						left += 1
+
+					elif (total > target):
+						right -= 1
+
+					else:
+						triplet = [S[i], S[left], S[right]]
+						output.append(triplet)
+						
+						while((S[left] == triplet[1]) and (left < right)):
+							left += 1
+						while((S[right] == triplet[2]) and (left < right)):
+							right -= 1
+
+			return output
+
+print(Solution().threeSum([-4, -2, -2, -2, 0, 1, 2, 2, 2, 3, 3, 4, 4, 6, 6]))
+print(datetime.now() - startTime)
